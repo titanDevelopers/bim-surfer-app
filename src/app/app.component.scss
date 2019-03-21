@@ -1,0 +1,34 @@
+.login {
+  padding-left: 20px;
+  background-color: antiquewhite;
+  display: block;
+}
+
+.projects {
+  margin-left: 20px;
+  display: flex;
+}
+
+.project {
+  cursor: pointer;
+  width: 200px;
+  margin: 5px;
+}
+
+.project:hover {
+  color: blue;
+  font-weight: bold;
+}
+
+.model {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+canvas {
+  display: block;
+  cursor: default;
+  width: 100%;
+  height: 100%;
+}

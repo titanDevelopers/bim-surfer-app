@@ -1,0 +1,14 @@
+<div class="login">
+  <button (click)="onLoginClick()">Login</button>
+</div>
+<div>
+  <h3>Projects:</h3>
+  <div class="projects">
+    <p class="project"
+      *ngFor="let info of projectsInfo"
+      (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
+  </div>
+</div>
+<div class="model">
+  <canvas id="glcanvas"></canvas>
+</div>

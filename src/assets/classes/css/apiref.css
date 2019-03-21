@@ -1,0 +1,60 @@
+textarea, pre {
+    padding: 10px 0;
+    border: none;
+    border-top: solid 1px #ddd;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+}
+
+pre {
+    background: white;
+    overflow: hidden;
+    white-space: pre-wrap;
+    border-top: none;
+}
+
+#apirefContainerContainer {
+    height: 100%;
+}
+
+#apirefContainer button {
+    width: 100px;
+}
+
+#apirefContainer {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 20px;
+    box-sizing: border-box;
+    border-left: solid 1px #ddd;
+    height:100%;
+}
+
+#apirefContainer h2, 
+#apirefContainer h3 {
+    padding: 0;
+    margin: 0;
+}
+
+#apirefContainer h3 {
+    padding-top: 10px;
+}
+
+canvas, .error {
+    width: 50%;
+    height: 100%;
+    float: left;
+}
+
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error span {
+    display: inline-block;
+    padding: 10px;
+    border: solid 1px #ddd;
+}

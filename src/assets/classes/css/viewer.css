@@ -1,0 +1,136 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-size: medium;
+}
+
+#canvasWrapper, canvas.full {
+	width: 100%;
+	height: 100%;
+}
+
+#viewerOverlay {
+	pointer-events: none;
+}
+
+#viewerOverlay circle {
+	fill: white;
+	stroke: black;
+	fill-opacity: 0.4;
+}
+
+canvas {
+	display: block;
+}
+
+#glcanvas {
+}
+
+#viewer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+#overlay {
+}
+
+#overlay h3 {
+	font-size: small;
+	color: dark-gray;
+	margin-bottom: 0;
+}
+
+#overlay {
+	z-index: 10;
+	position: absolute;
+	background: rgba(200, 200, 255, 0.2);
+	width: 20%;
+	height: 100%;
+	overflow: auto;
+}
+
+#settings .link, #settings .link * {
+	cursor: pointer;
+}
+
+#inside {
+	margin: 20px;
+}
+
+a {
+	cursor: pointer;
+}
+
+#progressbar {
+	left: 20%;
+	position: absolute;
+	bottom: 0px;
+	height: 10px;
+	width: 80%;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+#progress {
+	width: 0px;
+	background-color: rgba(100,149,237,0.5);
+	height: 100%;
+}
+
+#settings {
+	z-index: 10;
+	position: absolute;
+	right: 0px;
+	width: 400px;
+	background: rgba(200, 200, 255, 0.2);
+	padding: 10px;
+}
+
+#settings input {
+	width: 100px;
+}
+
+.arrow {
+	width: 16px;
+	height: 16px;
+}
+
+.arrow:hover {
+	cursor: pointer;
+}
+
+.arrowclosed {
+	background-image: url("../img/black_arrow.png");
+}
+
+.arrowclosed:hover {
+	background-image: url("../img/blue_arrow.png");
+}
+
+.arrowopen {
+	background-image: url("../img/black_arrow_down.png");
+}
+
+.arrowopen:hover {
+	background-image: url("../img/blue_arrow_down.png");
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.serverstatus {
+	width: 100px;
+}
+
+.serverstatus.up {
+	background: green;
+}
+
+.serverstatus.down {
+	background: red;
+}
