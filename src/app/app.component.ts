@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
 import { BimServerViewer } from 'surfer/target/classes/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -9,7 +10,9 @@ import { ProjectInfo } from './project-info.model';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+    env = environment;
     title = 'bim-surfer';
+    documentId = '';
     projectsInfo: ProjectInfo[] = [];
     bimServerClient: BimServerClient;
     bimServerViewer: BimServerViewer;
@@ -19,17 +22,23 @@ export class AppComponent {
         this.login();
     }
 
+    onLoadDocument(event: any) {
+        this.getProjectOid(this.documentId, (poid: number) => {
+            this.loadProject(poid);
+        });
+    }
+
     navigateToProject(info: ProjectInfo) {
         this.loadProject(info.poid);
     }
 
     private login() {
-        this.bimServerClient = new BimServerClient('http://localhost:8082');
+        this.bimServerClient = new BimServerClient(environment.apiUrl);
 
         this.bimServerClient.init(() => {
             this.bimServerClient.login(
-                'slivka@kros.sk',
-                '21kros12',
+                environment.login,
+                environment.password,
                 () => this.loginCallBack(),
                 (error: any) => console.log(error));
         });
@@ -44,7 +53,7 @@ export class AppComponent {
     }
 
     private getAllProjectsCallBack(projects: any) {
-        projects.forEach((project: any) => this.getProjectInfo(project));
+        projects.slice(0, 10).forEach((project: any) => this.getProjectInfo(project));
     }
 
     private getProjectInfo(project: any) {
@@ -55,6 +64,12 @@ export class AppComponent {
 
     private errorCallBack(error: any) {
         console.error(error);
+    }
+
+    private getProjectOid(documentId: string, callback: any) {
+        this.bimServerClient.call('ServiceInterface', 'getProjectsByName', { name: documentId }, (projects: any) => {
+            callback(projects[0].oid);
+        }, (error: any) => this.errorCallBack(error));
     }
 
     private loadProject(poid: number) {

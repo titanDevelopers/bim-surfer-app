@@ -51,6 +51,12 @@
                 "maximumWarning": "2mb",
                 "maximumError": "5mb"
               }]
+            },
+            "azure": {
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.azure.ts"
+              }]
             }
           }
         },
@@ -62,6 +68,9 @@
           "configurations": {
             "production": {
               "browserTarget": "bim-surfer:build:production"
+            },
+            "azure": {
+              "browserTarget": "bim-surfer:build:azure"
             }
           }
         },

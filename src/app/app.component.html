@@ -1,14 +1,62 @@
-<div class="login">
-  <button (click)="onLoginClick()">Login</button>
-</div>
-<div>
-  <h3>Projects:</h3>
-  <div class="projects">
-    <p class="project"
-      *ngFor="let info of projectsInfo"
-      (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
+<div class="container">
+
+  <div class="main-container">
+    <div class="login-container">
+      <div class="login"
+        *ngIf="!env.production">
+        <div class="login-info">
+          <p class="login-label">BIM server address:</p>
+          <input class="input"
+            type="text"
+            placeholder="example: localhost:8082"
+            [(ngModel)]="env.apiUrl">
+        </div>
+        <div class="login-info">
+          <p class="login-label"> User: </p>
+          <input class="input"
+            type="text"
+            placeholder="example: bimuser@kros.sk"
+            [(ngModel)]="env.login">
+        </div>
+        <div class="login-info">
+          <p class="login-label"> Password: </p>
+          <input class="input"
+            type="text"
+            placeholder="example: 21kros12"
+            [(ngModel)]="env.password">
+        </div>
+      </div>
+
+      <div class="login-button">
+        <button (click)="onLoginClick()">Login</button>
+      </div>
+
+      <div class="document"
+        *ngIf="env.production">
+        <div class="login-info">
+          <p class="login-label"> Document id: </p>
+          <input class="input"
+            type="text"
+            placeholder="example: documents/1-A"
+            [(ngModel)]="documentId">
+        </div>
+
+        <div class="login-button">
+          <button (click)="onLoadDocument($event)">Load</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-container">
+      <p>Projects:</p>
+      <p class="project"
+        *ngFor="let info of projectsInfo"
+        (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
+    </div>
   </div>
-</div>
-<div class="model">
-  <canvas id="glcanvas"></canvas>
+
+  <div class="model-container">
+    <canvas class="model"
+      id="glcanvas"></canvas>
+  </div>
 </div>
