@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
-import { BimServerViewer } from '../assets/classes/viewer/bimserverviewer';
+import { BimServerViewer } from 'surfer/target/classes/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
 
 @Component({
