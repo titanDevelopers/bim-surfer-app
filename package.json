@@ -11,7 +11,7 @@
     "azure": "ng serve --configuration=azure"
   },
   "engines": {
-    "node": "8.12.0",
+    "node": "8.11.1",
     "npm": "6.5.0"
   },
   "private": true,
