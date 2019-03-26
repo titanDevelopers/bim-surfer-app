@@ -85,10 +85,8 @@ export class AppComponent {
         this.bimServerClient.call('ServiceInterface', 'getProjectByPoid', {
             poid: poid
         }, (project: any) => {
-            // Select what canvas to bind the viewer to, this canvas has to exist (add it to your html or create it dynamically)
             const canvas = document.getElementById('glcanvas');
 
-            // Create a new BimServerViewer
             this.bimServerViewer = new BimServerViewer(
                 this.bimServerClient,
                 { viewerBasePath: '../' },
@@ -96,7 +94,6 @@ export class AppComponent {
                 canvas.clientWidth,
                 canvas.clientHeight);
 
-            // Load the model
             this.bimServerViewer.loadModel(project);
         });
     }
