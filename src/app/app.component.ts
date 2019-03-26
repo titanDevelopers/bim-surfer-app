@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
-import { BimServerViewer } from 'surfer/target/classes/viewer/bimserverviewer';
+import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
 import { environment } from 'src/environments/environment';
 
@@ -45,11 +45,20 @@ export class AppComponent {
     }
 
     private loginCallBack() {
-        this.bimServerClient.call('ServiceInterface', 'getAllProjects',
-            { onlyTopLevel: true, onlyActive: true },
-            (projects: any) => this.getAllProjectsCallBack(projects),
-            (error: any) => this.errorCallBack(error)
-        );
+        if (environment.production) {
+            this.projectsInfo.push({ name: 'oc_forum', poid: 1638401 });
+            this.projectsInfo.push({ name: 'tcj', poid: 1703937 });
+            this.projectsInfo.push({ name: 'bystricka', poid: 1835009 });
+            this.projectsInfo.push({ name: 'duplex', poid: 1900545 });
+            this.projectsInfo.push({ name: 'dek_cierny', poid: 1966081 });
+            this.projectsInfo.push({ name: 'mlyny', poid: 2031617 });
+        } else {
+            this.bimServerClient.call('ServiceInterface', 'getAllProjects',
+                { onlyTopLevel: true, onlyActive: true },
+                (projects: any) => this.getAllProjectsCallBack(projects),
+                (error: any) => this.errorCallBack(error)
+            );
+        }
     }
 
     private getAllProjectsCallBack(projects: any) {
@@ -66,8 +75,8 @@ export class AppComponent {
         console.error(error);
     }
 
-    private getProjectOid(documentId: string, callback: any) {
-        this.bimServerClient.call('ServiceInterface', 'getProjectsByName', { name: documentId }, (projects: any) => {
+    private getProjectOid(documentName: string, callback: any) {
+        this.bimServerClient.call('ServiceInterface', 'getProjectsByName', { name: documentName }, (projects: any) => {
             callback(projects[0].oid);
         }, (error: any) => this.errorCallBack(error));
     }

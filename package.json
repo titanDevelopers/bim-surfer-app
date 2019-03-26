@@ -22,10 +22,10 @@
     "@angular/platform-browser-dynamic": "^7.2.10",
     "@angular/platform-server": "^7.2.10",
     "@angular/router": "^7.2.10",
+    "@slivka/surfer": "0.0.2",
     "bimserverapi": "0.0.159",
     "core-js": "^2.5.4",
     "rxjs": "~6.3.3",
-    "surfer": "file:src/assets/surfer-0.0.1.tgz",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
