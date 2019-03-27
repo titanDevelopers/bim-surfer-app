@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
-        "build": "ng build --prod",
+        "build": "ng build --configuration=azure",
         "azure": "ng serve --configuration=azure",
         "test": "ng test",
         "lint": "ng lint",
