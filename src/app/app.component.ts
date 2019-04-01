@@ -52,7 +52,7 @@ export class AppComponent {
             this.projectsInfo.push({ name: 'duplex', poid: 983041 });
             this.projectsInfo.push({ name: 'dek_cierny', poid: 720897 });
             // this.projectsInfo.push({ name: 'mlyny', poid: 2031617 });
-            // this.projectsInfo.push({ name: 'rs_skanska', poid: 2097153 });
+            this.projectsInfo.push({ name: 'rs_skanska', poid: 1179649 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
