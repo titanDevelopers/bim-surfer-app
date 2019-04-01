@@ -46,13 +46,13 @@ export class AppComponent {
 
     private loginCallBack() {
         if (environment.production) {
-            this.projectsInfo.push({ name: 'oc_forum', poid: 1638401 });
-            this.projectsInfo.push({ name: 'tcj', poid: 1703937 });
-            this.projectsInfo.push({ name: 'bystricka', poid: 1835009 });
-            this.projectsInfo.push({ name: 'duplex', poid: 1900545 });
-            this.projectsInfo.push({ name: 'dek_cierny', poid: 1966081 });
-            this.projectsInfo.push({ name: 'mlyny', poid: 2031617 });
-            this.projectsInfo.push({ name: 'rs_skanska', poid: 2097153 });
+            this.projectsInfo.push({ name: 'oc_forum', poid: 1114113 });
+            this.projectsInfo.push({ name: 'tcj', poid: 1048577 });
+            this.projectsInfo.push({ name: 'bystricka', poid: 917505 });
+            this.projectsInfo.push({ name: 'duplex', poid: 983041 });
+            this.projectsInfo.push({ name: 'dek_cierny', poid: 720897 });
+            // this.projectsInfo.push({ name: 'mlyny', poid: 2031617 });
+            // this.projectsInfo.push({ name: 'rs_skanska', poid: 2097153 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
