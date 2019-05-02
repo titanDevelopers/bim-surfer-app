@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: 'http://bim-server.westeurope.cloudapp.azure.com:5500/bimservertest',
-    login: 'kros@kros.sk',
-    password: 'Titan123456789',
+    apiUrl: 'http://localhost:8082',
+    login: 'slivka@kros.sk',
+    password: '21kros12',
 };

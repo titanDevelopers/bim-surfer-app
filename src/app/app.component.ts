@@ -89,13 +89,13 @@ export class AppComponent {
             const canvas = document.getElementById('glcanvas');
 
             this.bimServerViewer = new BimServerViewer(
-                this.bimServerClient,
-                { viewerBasePath: '../' },
+                null,
                 canvas,
                 canvas.clientWidth,
-                canvas.clientHeight);
+                canvas.clientHeight,
+                null);
 
-            this.bimServerViewer.loadModel(project);
+            this.bimServerViewer.loadModel(this.bimServerClient, project);
         });
     }
 }
