@@ -46,13 +46,13 @@ export class AppComponent {
 
     private loginCallBack() {
         if (environment.production) {
-            this.projectsInfo.push({ name: 'oc_forum', poid: 1114113 });
-            this.projectsInfo.push({ name: 'tcj', poid: 1048577 });
-            this.projectsInfo.push({ name: 'bystricka', poid: 917505 });
-            this.projectsInfo.push({ name: 'duplex', poid: 983041 });
-            this.projectsInfo.push({ name: 'dek_cierny', poid: 720897 });
-            // this.projectsInfo.push({ name: 'mlyny', poid: 2031617 });
-            this.projectsInfo.push({ name: 'rs_skanska', poid: 1179649 });
+            this.projectsInfo.push({ name: 'oc_forum', poid: 327681 });
+            this.projectsInfo.push({ name: 'tcj', poid: 262145 });
+            this.projectsInfo.push({ name: 'bystricka', poid: 524289 });
+            this.projectsInfo.push({ name: 'duplex', poid: 196609 });
+            this.projectsInfo.push({ name: 'dek_cierny', poid: 131073 });
+            this.projectsInfo.push({ name: 'rd_samta', poid: 458753 });
+            this.projectsInfo.push({ name: 'schependomlaan', poid: 393217 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
@@ -89,7 +89,7 @@ export class AppComponent {
             const canvas = document.getElementById('glcanvas');
 
             this.bimServerViewer = new BimServerViewer(
-                null,
+                { triangleThresholdDefaultLayer: 10000000 },
                 canvas,
                 canvas.clientWidth,
                 canvas.clientHeight,
