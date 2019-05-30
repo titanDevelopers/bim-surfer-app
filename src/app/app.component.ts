@@ -23,13 +23,19 @@ export class AppComponent {
     }
 
     onLoadDocument(event: any) {
-        this.getProjectOid(this.documentId, (poid: number) => {
-            this.loadProject(poid);
-        });
+        this.loadModel(this.documentId);
     }
 
     navigateToProject(info: ProjectInfo) {
-        this.loadProject(info.poid);
+        this.loadModel(info.name);
+    }
+
+    private loadModel(documentName: string) {
+        this.getProjectByName(documentName, (project: any) => {
+            this.getTotalPrimitives([project.roid]).then((totalPrimitives: number) => {
+                this.loadProject(project.oid, totalPrimitives + 10000);
+            });
+        });
     }
 
     private login() {
@@ -50,9 +56,9 @@ export class AppComponent {
             this.projectsInfo.push({ name: 'tcj', poid: 262145 });
             this.projectsInfo.push({ name: 'bystricka', poid: 524289 });
             this.projectsInfo.push({ name: 'duplex', poid: 196609 });
-            this.projectsInfo.push({ name: 'dek_cierny', poid: 131073 });
+            this.projectsInfo.push({ name: 'dek_cierny', poid: 327681 });
             this.projectsInfo.push({ name: 'rd_samta', poid: 458753 });
-            this.projectsInfo.push({ name: 'schependomlaan', poid: 393217 });
+            this.projectsInfo.push({ name: 'kuco', poid: 393217 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
@@ -76,26 +82,34 @@ export class AppComponent {
         console.error(error);
     }
 
-    private getProjectOid(documentName: string, callback: any) {
+    private getProjectByName(documentName: string, callback: any) {
         this.bimServerClient.call('ServiceInterface', 'getProjectsByName', { name: documentName }, (projects: any) => {
-            callback(projects[0].oid);
+            callback({ oid: projects[0].oid, roid: projects[0].lastRevisionId });
         }, (error: any) => this.errorCallBack(error));
     }
 
-    private loadProject(poid: number) {
+    private loadProject(poid: number, totalPrimitives: number) {
         this.bimServerClient.call('ServiceInterface', 'getProjectByPoid', {
             poid: poid
         }, (project: any) => {
             const canvas = document.getElementById('glcanvas');
 
             this.bimServerViewer = new BimServerViewer(
-                { triangleThresholdDefaultLayer: 10000000 },
+                { triangleThresholdDefaultLayer: 1000000 },
                 canvas,
                 canvas.clientWidth,
                 canvas.clientHeight,
                 null);
 
             this.bimServerViewer.loadModel(this.bimServerClient, project);
+        });
+    }
+
+    getTotalPrimitives(roids: any): any {
+        return new Promise((resolve, reject) => {
+            this.bimServerClient.call('ServiceInterface', 'getNrPrimitivesTotal', { roids: roids }, (totalPrimitives: any) => {
+                resolve(totalPrimitives);
+            });
         });
     }
 }
