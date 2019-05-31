@@ -95,7 +95,7 @@ export class AppComponent {
             const canvas = document.getElementById('glcanvas');
 
             this.bimServerViewer = new BimServerViewer(
-                { triangleThresholdDefaultLayer: 1000000 },
+                { triangleThresholdDefaultLayer: totalPrimitives },
                 canvas,
                 canvas.clientWidth,
                 canvas.clientHeight,
