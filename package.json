@@ -25,7 +25,7 @@
     "@angular/platform-browser-dynamic": "^8.2.0",
     "@angular/platform-server": "^8.2.0",
     "@angular/router": "^8.2.0",
-    "@slivka/surfer": "^0.247.0",
+    "@slivka/surfer": "^0.253.0",
     "bimserverapi": "0.0.167",
     "core-js": "^2.5.4",
     "rxjs": "~6.5.2",

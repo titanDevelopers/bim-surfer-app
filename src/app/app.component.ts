@@ -52,13 +52,17 @@ export class AppComponent {
 
     private loginCallBack() {
         if (environment.production) {
-            this.projectsInfo.push({ name: 'oc_forum', poid: 327681 });
-            this.projectsInfo.push({ name: 'tcj', poid: 262145 });
-            this.projectsInfo.push({ name: 'bystricka', poid: 524289 });
-            this.projectsInfo.push({ name: 'duplex', poid: 196609 });
-            this.projectsInfo.push({ name: 'dek_cierny', poid: 327681 });
-            this.projectsInfo.push({ name: 'rd_samta', poid: 458753 });
-            this.projectsInfo.push({ name: 'kuco', poid: 393217 });
+            this.projectsInfo.push({ name: 'oc_forum', poid: 1 });
+            this.projectsInfo.push({ name: 'tcj', poid: 2 });
+            this.projectsInfo.push({ name: 'lakeside', poid: 3 });
+            this.projectsInfo.push({ name: 'duplex', poid: 4 });
+            this.projectsInfo.push({ name: 'dek_cierny', poid: 5 });
+            this.projectsInfo.push({ name: 'rd_samta', poid: 6 });
+            this.projectsInfo.push({ name: 'kuco', poid: 7 });
+            this.projectsInfo.push({ name: 'schepen', poid: 8 });
+            this.projectsInfo.push({ name: 'kros', poid: 9 });
+            this.projectsInfo.push({ name: 'dek_skladby', poid: 10 });
+            this.projectsInfo.push({ name: 'komora', poid: 11 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
@@ -95,7 +99,12 @@ export class AppComponent {
             const canvas = document.getElementById('glcanvas');
 
             this.bimServerViewer = new BimServerViewer(
-                { triangleThresholdDefaultLayer: totalPrimitives },
+                {
+                    triangleThresholdDefaultLayer: totalPrimitives,
+                    loaderSettings: {
+                        useUuidAndRid: true
+                    }
+                },
                 canvas,
                 canvas.clientWidth,
                 canvas.clientHeight,
