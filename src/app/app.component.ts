@@ -100,10 +100,7 @@ export class AppComponent {
 
             this.bimServerViewer = new BimServerViewer(
                 {
-                    triangleThresholdDefaultLayer: totalPrimitives,
-                    loaderSettings: {
-                        useUuidAndRid: true
-                    }
+                    triangleThresholdDefaultLayer: totalPrimitives
                 },
                 canvas,
                 canvas.clientWidth,
