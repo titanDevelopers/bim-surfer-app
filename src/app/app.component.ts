@@ -100,7 +100,8 @@ export class AppComponent {
 
             this.bimServerViewer = new BimServerViewer(
                 {
-                    triangleThresholdDefaultLayer: totalPrimitives
+                    triangleThresholdDefaultLayer: totalPrimitives + 10000,
+                    excludedTypes: this.getExludeTypes(project.schema)
                 },
                 canvas,
                 canvas.clientWidth,
@@ -109,6 +110,14 @@ export class AppComponent {
 
             this.bimServerViewer.loadModel(this.bimServerClient, project);
         });
+    }
+
+    private getExludeTypes(schema: string): string[] {
+        if (schema === 'ifc4') {
+            return ['IfcSpace', 'IfcOpeningElement', 'IfcAnnotation', 'IfcOpeningStandardCase'];
+        } else {
+            return ['IfcSpace', 'IfcOpeningElement', 'IfcAnnotation'];
+        }
     }
 
     getTotalPrimitives(roids: any): any {
