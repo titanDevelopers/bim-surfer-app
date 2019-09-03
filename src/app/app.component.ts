@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
 import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
@@ -9,14 +9,20 @@ import { environment } from 'src/environments/environment';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
+
     env = environment;
     title = 'bim-surfer';
     documentId = '';
     projectsInfo: ProjectInfo[] = [];
     bimServerClient: BimServerClient;
     bimServerViewer: BimServerViewer;
+    camera: any;
+    progress = 0;
 
+    ngAfterViewInit() {
+        this.login();
+    }
 
     onLoginClick() {
         this.login();
@@ -28,6 +34,14 @@ export class AppComponent {
 
     navigateToProject(info: ProjectInfo) {
         this.loadModel(info.name);
+    }
+
+    onSaveCamera() {
+        this.camera = this.bimServerViewer.getCamera();
+    }
+
+    onLoadCamera() {
+        this.bimServerViewer.setCamera(this.camera);
     }
 
     private loadModel(documentName: string) {
@@ -63,6 +77,7 @@ export class AppComponent {
             this.projectsInfo.push({ name: 'kros', poid: 9 });
             this.projectsInfo.push({ name: 'dek_skladby', poid: 10 });
             this.projectsInfo.push({ name: 'komora', poid: 11 });
+            this.projectsInfo.push({ name: 'documents/2239-A', poid: 11 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
@@ -107,6 +122,14 @@ export class AppComponent {
                 canvas.clientWidth,
                 canvas.clientHeight,
                 null);
+
+            this.bimServerViewer.setProgressListener((percentage: number) => {
+                this.progress = Math.round(percentage);
+            });
+
+            // this.bimServerViewer.viewer.addAnimationListener((deltaTime) => {
+            //     this.bimServerViewer.viewer.camera.orbitYaw(0.3);
+            // });
 
             this.bimServerViewer.loadModel(this.bimServerClient, project);
         });

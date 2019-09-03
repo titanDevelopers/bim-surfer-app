@@ -27,9 +27,9 @@
         </div>
       </div>
 
-      <div class="login-button">
+      <!-- <div class="login-button">
         <button (click)="onLoginClick()">Login</button>
-      </div>
+      </div> -->
 
       <div class="document"
         *ngIf="env.production">
@@ -43,6 +43,9 @@
 
         <div class="login-button">
           <button (click)="onLoadDocument($event)">Load</button>
+          <div>
+            <p>Actual progress: {{progress}}%</p>
+          </div>
         </div>
       </div>
     </div>
