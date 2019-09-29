@@ -4,6 +4,12 @@ import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
 import { environment } from 'src/environments/environment';
 
+
+export interface Direction {
+    value: string;
+    viewValue: string;
+}
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -20,7 +26,16 @@ export class AppComponent implements AfterViewInit {
     camera: any;
     progress = 0;
 
+    directions: Direction[] = [
+        { value: '0', viewValue: 'No section' },
+        { value: '1', viewValue: 'Free section' },
+        { value: '2', viewValue: 'X-axis' },
+        { value: '3', viewValue: 'Y-axis' },
+        { value: '4', viewValue: 'Z-axis' }
+    ];
+
     ngAfterViewInit() {
+
         this.login();
     }
 
@@ -36,12 +51,13 @@ export class AppComponent implements AfterViewInit {
         this.loadModel(info.name);
     }
 
-    onSaveCamera() {
-        this.camera = this.bimServerViewer.getCamera();
-    }
+    onDirectionChange(event: any) {
+        this.bimServerViewer.settings.sectionPlaneDirection = Number(event.value);
 
-    onLoadCamera() {
-        this.bimServerViewer.setCamera(this.camera);
+        if (this.bimServerViewer.settings.sectionPlaneDirection === 0) {
+            this.bimServerViewer.viewer.removeSectionPlaneWidget();
+            this.bimServerViewer.viewer.disableSectionPlane();
+        }
     }
 
     private loadModel(documentName: string) {
@@ -78,6 +94,7 @@ export class AppComponent implements AfterViewInit {
             this.projectsInfo.push({ name: 'dek_skladby', poid: 10 });
             this.projectsInfo.push({ name: 'komora', poid: 11 });
             this.projectsInfo.push({ name: 'documents/2239-A', poid: 11 });
+            this.projectsInfo.push({ name: 'documents/3680-A', poid: 12 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
@@ -115,7 +132,7 @@ export class AppComponent implements AfterViewInit {
 
             this.bimServerViewer = new BimServerViewer(
                 {
-                    triangleThresholdDefaultLayer: totalPrimitives + 10000,
+                    triangleThresholdDefaultLayer: totalPrimitives,
                     excludedTypes: this.getExludeTypes(project.schema)
                 },
                 canvas,

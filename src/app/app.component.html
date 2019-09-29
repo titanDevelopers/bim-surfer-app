@@ -31,8 +31,7 @@
         <button (click)="onLoginClick()">Login</button>
       </div> -->
 
-      <div class="document"
-        *ngIf="env.production">
+      <div class="document">
         <div class="login-info">
           <p class="login-label"> Document id: </p>
           <input class="input"
@@ -46,6 +45,15 @@
           <div>
             <p>Actual progress: {{progress}}%</p>
           </div>
+          <mat-form-field>
+            <mat-label>Section direction</mat-label>
+            <mat-select (selectionChange)="onDirectionChange($event)">
+              <mat-option *ngFor="let direction of directions"
+                [value]="direction.value">
+                {{direction.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
     </div>
