@@ -37,6 +37,7 @@ export class BimMeasureUnitHelper {
                     this.units[BimMeasureType.ifcMassMeasure] = this.getUnit(unit.object);
                 }
             });
+            this.units[BimMeasureType.ifcLength] = 'm';
         });
     }
 

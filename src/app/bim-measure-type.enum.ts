@@ -5,4 +5,5 @@ export enum BimMeasureType {
     ifcPositiveLengthMeasure = 'IfcPositiveLengthMeasure',
     ifcMassMeasure = 'IfcMassMeasure',
     ifcVolumeMeasure = 'IfcVolumeMeasure',
+    ifcLength = 'IfcLength'
 }

@@ -130,6 +130,9 @@ export class AppComponent implements AfterViewInit {
     }
 
     private loadModel(documentName: string) {
+        this.dataSource = undefined;
+        this.bimPropertyListService.showElementProperties([]);
+
         this.getProjectByName(documentName, (project: any) => {
             this.getTotalPrimitives([project.roid]).then((totalPrimitives: number) => {
                 this.loadProject(project.oid, totalPrimitives + 10000);
@@ -276,7 +279,7 @@ export class AppComponent implements AfterViewInit {
         if (key.indexOf('AREA') > -1) {
             return BimMeasureType.ifcAreaMeasure;
         } else if (key.indexOf('BOUNDING') > -1) {
-            return BimMeasureType.ifcLengthMeasure;
+            return BimMeasureType.ifcLength;
         } else if (key.indexOf('VOLUME') > -1) {
             return BimMeasureType.ifcVolumeMeasure;
         }
