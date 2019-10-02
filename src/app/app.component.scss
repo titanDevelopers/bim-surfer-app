@@ -1,96 +1,243 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 95vh;
+@import '../styles.scss';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
-  .main-container {
+.container {
     display: flex;
     flex-direction: column;
-    flex: 2;
-    margin-left: 5px;
+    height: 98vh;
+    margin: 0px;
 
-    .login-container {
-      display: flex;
-      flex-direction: row;
-      flex: 1;
-      background-color: antiquewhite;
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
 
-      .login {
+        .login-container {
+            display: flex;
+            flex-direction: row;
+            flex: 2;
+            background-color: antiquewhite;
+
+            .login {
+                min-height: 0;
+                display: flex;
+                flex-direction: row;
+
+                .login-info {
+                    min-height: 0;
+                    display: flex;
+                    flex-direction: row;
+                    padding-right: 5px;
+                    align-items: center;
+
+                    .login-label {
+                        padding-right: 5px;
+                    }
+
+                    .input {
+                        max-height: 20px;
+                    }
+                }
+            }
+
+            .document {
+                display: flex;
+                flex: 1;
+                align-items: center;
+                padding-left: 5px;
+                min-height: 0px;
+
+                .login-info {
+                    min-height: 0;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    .login-label {
+                        padding-right: 5px;
+                    }
+
+                    .input {
+                        max-height: 20px;
+                    }
+                }
+
+                p {
+                    height: 9px;
+                }
+
+                .login-button {
+                    display: flex;
+                    align-items: center;
+                    padding-left: 5px;
+
+                    .progress {
+                        padding-left: 10px;
+                    }
+                }
+            }
+
+            .sectionPlane {
+                display: flex;
+                align-items: center;
+                padding-left: 15px;
+            }
+        }
+
+        .project-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding-top: 5px;
+
+            p {
+                margin-left: 5px;
+                height: 10px;
+            }
+
+            .project {
+                cursor: pointer;
+            }
+
+            .project:hover {
+                color: blue;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .model-container {
         min-height: 0;
         display: flex;
-        flex-direction: row;
-        margin-right: 10px;
+        flex: 8;
+        height: 100%;
 
-        .login-info {
-          min-height: 0;
-          display: flex;
-          flex-direction: row;
-          margin-right: 5px;
-          align-items: center;
+        .left {
+            display: flex;
+            flex: 2;
+            flex-direction: column;
+            min-width: 0;
+            padding: 5px;
 
-          .login-label {
-            margin-right: 5px;
-          }
+            .top {
+                flex: 2;
+                border: solid 1px #e0e0e0;
+                margin-bottom: 5px;
 
-          .input {
-            max-height: 20px;
-          }
+                .header {
+                    display: flex;
+                    flex-direction: row;
+                    min-width: 0;
+                    padding-left: 10px;
+                }
+
+                mat-table {
+                    flex: 1;
+                    overflow: auto;
+
+                    mat-row {
+                        display: flex;
+                        flex-direction: row;
+                        min-height: 24px;
+                        font-size: 12px;
+
+                        .cdk-column-name {
+                            flex: 0 0 200px;
+                            padding-right: 5px;
+                        }
+
+                        .cdk-column-value {
+                            flex: 0 0 60px;
+                            padding-right: 5px;
+                        }
+
+                        .cdk-column-measureUnit {
+                            flex: 0 0 10px;
+                        }
+                    }
+                }
+            }
+
+            .bottom {
+                display: flex;
+                flex: 3;
+                min-height: 0;
+                flex-direction: column;
+                border: solid 1px #e0e0e0;
+
+                .header {
+                    display: flex;
+                    min-width: 0;
+                    padding-left: 10px;
+                }
+
+                .kros-property-list-container {
+                    position: relative;
+                    overflow: auto;
+                    width: 100%;
+
+                    .node-row {
+                        width: 100%;
+                        flex-direction: row;
+                        display: flex;
+                        flex: 1;
+                        cursor: default;
+                    }
+                    .node-row > * {
+                        line-height: 25px;
+                        font-size: 12px;
+                    }
+                    .mat-tree-node.node-parent {
+                        font-weight: bold;
+                    }
+                    .node-parent.level-0 .node-name {
+                        font-weight: bold;
+                    }
+                    .node-parent {
+                        display: flex;
+                        margin-right: 7px;
+                    }
+                    .node-children {
+                        display: flex;
+                        padding-left: 10px;
+                        padding-top: 2px;
+                        margin-right: 7px;
+                    }
+                    .node-button {
+                        flex: 0 0 auto;
+                        width: 30px;
+                        z-index: 2;
+                    }
+                    .node-name {
+                        flex: 2;
+                    }
+                    .node-value {
+                        flex: 3;
+                    }
+                    @for $index from 0 through 7 {
+                        .level-#{$index} {
+                            padding-left: #{$index * 10}px;
+                        }
+                    }
+                    .mat-icon-button .mat-icon {
+                        font-size: 18px;
+                    }
+                    .mat-icon-button {
+                        line-height: unset;
+                        height: auto;
+                    }
+                    .mat-tree-node {
+                        min-height: auto;
+                    }
+                }
+            }
         }
-      }
 
-      .login-button {
-        display: flex;
-        align-items: center;
-        margin-right: 10px;
-      }
-
-      .document {
-        display: flex;
-        align-items: center;
-
-        .login-info {
-          min-height: 0;
-          display: flex;
-          flex-direction: row;
-          margin-right: 5px;
-          align-items: center;
-
-          .login-label {
-            margin-right: 5px;
-          }
-
-          .input {
-            max-height: 20px;
-          }
+        .model {
+            min-height: 0;
+            flex: 5;
+            cursor: default;
+            padding: 5px;
         }
-      }
     }
-
-    .project-container {
-      flex: 1;
-      display: flex;
-
-      .project {
-        cursor: pointer;
-        margin-left: 5px;
-      }
-
-      .project:hover {
-        color: blue;
-        font-weight: bold;
-      }
-    }
-  }
-
-  .model-container {
-    min-height: 0;
-    display: flex;
-    flex: 8;
-
-    .model {
-      min-height: 0;
-      flex: 1;
-      cursor: default;
-    }
-  }
 }
