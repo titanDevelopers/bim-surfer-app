@@ -35,7 +35,6 @@ export class AppComponent implements AfterViewInit {
     ];
 
     ngAfterViewInit() {
-
         this.login();
     }
 
@@ -53,6 +52,7 @@ export class AppComponent implements AfterViewInit {
 
     onDirectionChange(event: any) {
         this.bimServerViewer.settings.sectionPlaneDirection = Number(event.value);
+        this.bimServerViewer.viewer.moveSectionPlaneWidget();
 
         if (this.bimServerViewer.settings.sectionPlaneDirection === 0) {
             this.bimServerViewer.viewer.removeSectionPlaneWidget();
