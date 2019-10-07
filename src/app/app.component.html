@@ -1,73 +1,138 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 <div class="container">
+    <div class="main-container">
+        <div class="login-container">
+            <div class="login"
+                 *ngIf="!env.production">
+                <div class="login-info">
+                    <p class="login-label">BIM server address:</p>
+                    <input class="input"
+                           type="text"
+                           placeholder="example: localhost:8082"
+                           [(ngModel)]="env.apiUrl">
+                </div>
+                <div class="login-info">
+                    <p class="login-label"> User: </p>
+                    <input class="input"
+                           type="text"
+                           placeholder="example: bimuser@kros.sk"
+                           [(ngModel)]="env.login">
+                </div>
+                <div class="login-info">
+                    <p class="login-label"> Password: </p>
+                    <input class="input"
+                           type="text"
+                           placeholder="example: 21kros12"
+                           [(ngModel)]="env.password">
+                </div>
+            </div>
 
-  <div class="main-container">
-    <div class="login-container">
-      <div class="login"
-        *ngIf="!env.production">
-        <div class="login-info">
-          <p class="login-label">BIM server address:</p>
-          <input class="input"
-            type="text"
-            placeholder="example: localhost:8082"
-            [(ngModel)]="env.apiUrl">
-        </div>
-        <div class="login-info">
-          <p class="login-label"> User: </p>
-          <input class="input"
-            type="text"
-            placeholder="example: bimuser@kros.sk"
-            [(ngModel)]="env.login">
-        </div>
-        <div class="login-info">
-          <p class="login-label"> Password: </p>
-          <input class="input"
-            type="text"
-            placeholder="example: 21kros12"
-            [(ngModel)]="env.password">
-        </div>
-      </div>
+            <div class="document">
+                <div class="login-info">
+                    <p class="login-label"> Document id: </p>
+                    <input class="input"
+                           type="text"
+                           placeholder="example: documents/1-A"
+                           [(ngModel)]="documentId">
+                </div>
 
-      <!-- <div class="login-button">
-        <button (click)="onLoginClick()">Login</button>
-      </div> -->
+                <div class="login-button">
+                    <button (click)="onLoadDocument($event)">Load</button>
+                    <div class="progress">
+                        <p>Actual progress: {{progress}}%</p>
+                    </div>
+                </div>
+            </div>
 
-      <div class="document">
-        <div class="login-info">
-          <p class="login-label"> Document id: </p>
-          <input class="input"
-            type="text"
-            placeholder="example: documents/1-A"
-            [(ngModel)]="documentId">
+            <div class="sectionPlane"
+                 *ngIf="isSectionDirection">
+                <mat-form-field>
+                    <mat-label>Section direction</mat-label>
+                    <mat-select (selectionChange)="onDirectionChange($event)">
+                        <mat-option *ngFor="let direction of directions"
+                                    [value]="direction.value">
+                            {{direction.viewValue}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </div>
 
-        <div class="login-button">
-          <button (click)="onLoadDocument($event)">Load</button>
-          <div>
-            <p>Actual progress: {{progress}}%</p>
-          </div>
-          <mat-form-field>
-            <mat-label>Section direction</mat-label>
-            <mat-select (selectionChange)="onDirectionChange($event)">
-              <mat-option *ngFor="let direction of directions"
-                [value]="direction.value">
-                {{direction.viewValue}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="project-container">
+            <p>Projects:</p>
+            <p class="project"
+               *ngFor="let info of projectsInfo"
+               (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
         </div>
-      </div>
     </div>
 
-    <div class="project-container">
-      <p>Projects:</p>
-      <p class="project"
-        *ngFor="let info of projectsInfo"
-        (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
-    </div>
-  </div>
+    <div class="model-container">
+        <div class="left">
+            <div class="top">
+                <div class="header">
+                    <h4 class="mat-h4">Measurement</h4>
+                </div>
+                <mat-table [dataSource]="dataSource">
+                    <ng-container matColumnDef="name">
+                        <mat-cell *matCellDef="let row">{{row.name}}</mat-cell>
+                    </ng-container>
 
-  <div class="model-container">
-    <canvas class="model"
-      id="glcanvas"></canvas>
-  </div>
+                    <ng-container matColumnDef="value">
+                        <mat-cell *matCellDef="let row">
+                            {{ row.value }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="measureUnit">
+                        <mat-cell *matCellDef="let row">
+                            <span>{{getMeasureUnit(row.type)}}</span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"
+                             class="no-selection">
+                    </mat-row>
+                </mat-table>
+            </div>
+            <div class="bottom">
+                <div class="header">
+                    <h4 class="mat-h4">Vlasnosti</h4>
+                </div>
+                <div class="kros-property-list-container container">
+                    <mat-tree [dataSource]="properties"
+                              [treeControl]="treeControl"
+                              *ngIf="properties.data"
+                              class="content">
+                        <mat-tree-node *matTreeNodeDef="let node"
+                                       class="node-children level-{{node.level}}">
+                            <div class="node-row">
+                                <div class="node-button"></div>
+                                <div class="node-name">{{node.name}}</div>
+                                <div class="node-value">{{node.value}}</div>
+                            </div>
+                        </mat-tree-node>
+
+                        <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+                                       class="node-parent level-{{node.level}}">
+                            <div class="node-row">
+                                <button *ngIf="node.expandable"
+                                        class="node-button"
+                                        mat-icon-button
+                                        matTreeNodeToggle
+                                        [attr.aria-label]="'toggle ' + node.name">
+                                    <mat-icon class="mat-icon-rtl-mirror">
+                                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                                    </mat-icon>
+                                </button>
+                                <div class="node-name">{{node.name}}</div>
+                            </div>
+                        </mat-tree-node>
+                    </mat-tree>
+                </div>
+            </div>
+        </div>
+        <canvas class="model"
+                id="glcanvas"></canvas>
+    </div>
 </div>
