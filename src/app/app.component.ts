@@ -34,7 +34,7 @@ export class AppComponent implements AfterViewInit {
     bimServerViewer: BimServerViewer;
     camera: any;
     progress = 0;
-    isSectionDirection = false;
+    isSectionDirection = true;
     roid: number;
 
     dataSource: MatTableDataSource<BimMeasureRow>;
@@ -131,14 +131,25 @@ export class AppComponent implements AfterViewInit {
     }
 
     private loadModel(documentName: string) {
-        this.dataSource = undefined;
-        this.bimPropertyListService.showElementProperties([]);
+        this.clear();
 
         this.getProjectByName(documentName, (project: any) => {
             this.getTotalPrimitives([project.roid]).then((totalPrimitives: number) => {
                 this.loadProject(project.oid, totalPrimitives + 10000);
             });
         });
+    }
+
+    private clear() {
+        this.dataSource = undefined;
+        this.bimPropertyListService.clear();
+
+        if (this.bimServerViewer) {
+            this.bimServerViewer.viewer.overlay.nodes[0].destroy();
+            this.bimServerViewer.viewer.eventHandler.off('selection_state_changed', (elements: any, isSelected: boolean) => {
+                this.onSelectionChanged(elements, isSelected);
+            });
+        }
     }
 
     private login() {
@@ -166,6 +177,7 @@ export class AppComponent implements AfterViewInit {
             this.projectsInfo.push({ name: 'kros', poid: 9 });
             this.projectsInfo.push({ name: 'dek_skladby', poid: 10 });
             this.projectsInfo.push({ name: 'komora', poid: 11 });
+            this.projectsInfo.push({ name: 'urs_dds', poid: 12 });
         } else {
             this.bimServerClient.call('ServiceInterface', 'getAllProjects',
                 { onlyTopLevel: true, onlyActive: true },
