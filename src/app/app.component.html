@@ -1,30 +1,30 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+    rel="stylesheet">
 <div class="container">
     <div class="main-container">
         <div class="login-container">
             <div class="login"
-                 *ngIf="!env.production">
+                *ngIf="false">
                 <div class="login-info">
                     <p class="login-label">BIM server address:</p>
                     <input class="input"
-                           type="text"
-                           placeholder="example: localhost:8082"
-                           [(ngModel)]="env.apiUrl">
+                        type="text"
+                        placeholder="example: localhost:8082"
+                        [(ngModel)]="env.apiUrl">
                 </div>
                 <div class="login-info">
                     <p class="login-label"> User: </p>
                     <input class="input"
-                           type="text"
-                           placeholder="example: bimuser@kros.sk"
-                           [(ngModel)]="env.login">
+                        type="text"
+                        placeholder="example: bimuser@kros.sk"
+                        [(ngModel)]="env.login">
                 </div>
                 <div class="login-info">
                     <p class="login-label"> Password: </p>
                     <input class="input"
-                           type="text"
-                           placeholder="example: 21kros12"
-                           [(ngModel)]="env.password">
+                        type="text"
+                        placeholder="example: 21kros12"
+                        [(ngModel)]="env.password">
                 </div>
             </div>
 
@@ -32,9 +32,9 @@
                 <div class="login-info">
                     <p class="login-label"> Document id: </p>
                     <input class="input"
-                           type="text"
-                           placeholder="example: documents/1-A"
-                           [(ngModel)]="documentId">
+                        type="text"
+                        placeholder="example: documents/1-A"
+                        [(ngModel)]="documentId">
                 </div>
 
                 <div class="login-button">
@@ -46,12 +46,12 @@
             </div>
 
             <div class="sectionPlane"
-                 *ngIf="isSectionDirection">
+                *ngIf="isSectionDirection">
                 <mat-form-field>
                     <mat-label>Section direction</mat-label>
                     <mat-select (selectionChange)="onDirectionChange($event)">
                         <mat-option *ngFor="let direction of directions"
-                                    [value]="direction.value">
+                            [value]="direction.value">
                             {{direction.viewValue}}
                         </mat-option>
                     </mat-select>
@@ -62,8 +62,8 @@
         <div class="project-container">
             <p>Projects:</p>
             <p class="project"
-               *ngFor="let info of projectsInfo"
-               (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
+                *ngFor="let info of projectsInfo"
+                (click)="navigateToProject(info)">{{info.poid}}; <b>{{info.name}}</b></p>
         </div>
     </div>
 
@@ -91,7 +91,7 @@
                     </ng-container>
 
                     <mat-row *matRowDef="let row; columns: displayedColumns;"
-                             class="no-selection">
+                        class="no-selection">
                     </mat-row>
                 </mat-table>
             </div>
@@ -101,11 +101,11 @@
                 </div>
                 <div class="kros-property-list-container container">
                     <mat-tree [dataSource]="properties"
-                              [treeControl]="treeControl"
-                              *ngIf="properties.data"
-                              class="content">
+                        [treeControl]="treeControl"
+                        *ngIf="properties.data"
+                        class="content">
                         <mat-tree-node *matTreeNodeDef="let node"
-                                       class="node-children level-{{node.level}}">
+                            class="node-children level-{{node.level}}">
                             <div class="node-row">
                                 <div class="node-button"></div>
                                 <div class="node-name">{{node.name}}</div>
@@ -114,13 +114,13 @@
                         </mat-tree-node>
 
                         <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                                       class="node-parent level-{{node.level}}">
+                            class="node-parent level-{{node.level}}">
                             <div class="node-row">
                                 <button *ngIf="node.expandable"
-                                        class="node-button"
-                                        mat-icon-button
-                                        matTreeNodeToggle
-                                        [attr.aria-label]="'toggle ' + node.name">
+                                    class="node-button"
+                                    mat-icon-button
+                                    matTreeNodeToggle
+                                    [attr.aria-label]="'toggle ' + node.name">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>
@@ -133,6 +133,6 @@
             </div>
         </div>
         <canvas class="model"
-                id="glcanvas"></canvas>
+            id="glcanvas"></canvas>
     </div>
 </div>
