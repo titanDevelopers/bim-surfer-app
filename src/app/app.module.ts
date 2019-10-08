@@ -11,6 +11,8 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BimPropertyListService } from './bim-property-list.service';
+import { SectionPlaneService } from './section-plane.service';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -24,14 +26,15 @@ import { BimPropertyListService } from './bim-property-list.service';
         MatTableModule,
         MatTreeModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        CommonModule
     ],
     exports: [
         MatIconModule,
         MatTreeModule,
         MatTableModule
     ],
-    providers: [BimPropertyListService, BimMeasureUnitHelper],
+    providers: [BimPropertyListService, BimMeasureUnitHelper, SectionPlaneService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
