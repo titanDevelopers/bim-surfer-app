@@ -132,16 +132,25 @@
                 </div>
             </div>
         </div>
-        <canvas id="glcanvas"
-            class="model"
-            (mousemove)="onCanvasMouseMove($event)"
-            (mousedown)="onCanvasMouseDown($event)"></canvas>
-        <div [ngClass]="myIconClass"
-            #cut
-            (mousedown)="onIconMouseDown($event)"
-            (mouseout)="onIconMouseUp($event)"
-            (mousemove)="onIconMouseMove($event)">
-            <img src="../assets/cut-icon.png">
+        <div class="model"
+            (mouseup)="onModelMouseUp($event)"
+            (resized)="onResized($event)">
+            <canvas id="glcanvas"
+                #canvas
+                class="canvas-model"
+                (mousemove)="onCanvasMouseMove($event)"
+                (mouseup)="onCanvasMouseUp($event)"
+                (mousedown)="onCanvasMouseDown($event)"
+                (wheel)="onCanvasMouseWheel($event)"></canvas>
+            <div [ngClass]="myIconClass"
+                #cut
+                (mousedown)="onIconMouseDown($event)"
+                (mousemove)="onIconMouseMove($event)">
+                <img draggable="false"
+                    (dragstart)="false"
+                    class="image-cut">
+                <!-- <img src="../assets/cut-icon-hover.png"> -->
+            </div>
         </div>
     </div>
 </div>

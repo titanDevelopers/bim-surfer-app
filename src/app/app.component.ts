@@ -1,7 +1,13 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
 import { BimServerViewer } from '../../../BIMsurfer-1/viewer/bimserverviewer';
-import * as vec3 from '../../../BIMsurfer-1/viewer/glmatrix/vec3';
+import { Viewer } from '../../../BIMsurfer-1/viewer/viewer';
+import * as vec2 from '../../../BIMsurfer-1/viewer/glmatrix/vec2';
+
+// import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
+// import { Viewer } from '@slivka/surfer/viewer/viewer';
+// import * as vec2 from '@slivka/surfer/viewer/glmatrix/vec2';
+
 import { ProjectInfo } from './project-info.model';
 import { environment } from 'src/environments/environment';
 import { BimMeasureUnitHelper } from './bim-measure-unit.helper';
@@ -15,6 +21,7 @@ import { BimPropertyNodeModel, BimPropertyModel } from './bim-property.model';
 import { Subject, Observable, of as observableOf } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SectionPlaneService } from './section-plane.service';
+import { ResizedEvent } from 'angular-resize-event';
 
 export const DRAG_ORBIT = 0xfe01;
 export const DRAG_PAN = 0xfe02;
@@ -38,11 +45,16 @@ export class AppComponent implements AfterViewInit {
     projectsInfo: ProjectInfo[] = [];
     bimServerClient: BimServerClient;
     bimServerViewer: BimServerViewer;
+    viewer: Viewer;
     camera: any;
     progress = 0;
     isSectionDirection = true;
     roid: number;
     myIconClass = 'icon icon-hidden';
+    lastIconClass = 'icon icon-hidden';
+    canvas_pos: Float32Array;
+    dragging = false;
+    freeSectionEnabled = false;
 
     dataSource: MatTableDataSource<BimMeasureRow>;
     displayedColumns: string[] = ['name', 'value', 'measureUnit'];
@@ -53,17 +65,19 @@ export class AppComponent implements AfterViewInit {
 
     private unsubscribe: Subject<void> = new Subject();
     @ViewChild('cut', { static: false }) someInput: ElementRef;
+    @ViewChild('canvas', { static: false }) canvas: ElementRef;
 
 
     directions: Direction[] = [
-        { value: '0', viewValue: 'No section' },
-        { value: '1', viewValue: 'Free section' },
-        { value: '2', viewValue: 'X-axis' },
-        { value: '3', viewValue: 'Y-axis' },
-        { value: '4', viewValue: 'Z-axis' }
+        { value: '-1', viewValue: 'No section' },
+        { value: '0', viewValue: 'X-axis' },
+        { value: '1', viewValue: 'Y-axis' },
+        { value: '2', viewValue: 'Z-axis' },
+        { value: '3', viewValue: 'Free section' },
     ];
 
     translations = {};
+    cutIcon: any;
 
     constructor(
         private bimPropertyListService: BimPropertyListService,
@@ -74,6 +88,10 @@ export class AppComponent implements AfterViewInit {
             this.isExpandable, this.getChildren);
         this.treeControl = new FlatTreeControl<BimPropertyNodeModel>(this.getLevel, this.isExpandable);
         this.properties = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+
+        this.cutIcon = new Image();
+        this.cutIcon.src = '../assets/cut-icon.png';
+        this.canvas_pos = vec2.create();
     }
 
     transformer = (node: BimPropertyModel, level: number) => {
@@ -122,17 +140,23 @@ export class AppComponent implements AfterViewInit {
     }
 
     onDirectionChange(event: any) {
-        this.bimServerViewer.settings.sectionPlaneDirection = Number(event.value);
-        this.bimServerViewer.viewer.moveSectionPlaneWidget();
+        this.viewer.sectionPlaneHelper.sectionIndex = Number(event.value);
+        this.viewer.removeSectionPlaneWidget();
+        this.viewer.disableSectionPlane();
+        this.viewer.moveSectionPlaneWidget();
+        this.freeSectionEnabled = false;
 
-        if (this.bimServerViewer.settings.sectionPlaneDirection === 0) {
-            this.myIconClass = 'icon icon-hidden';
-            this.bimServerViewer.viewer.removeSectionPlaneWidget();
-            this.bimServerViewer.viewer.disableSectionPlane();
+
+        if (this.viewer.sectionPlaneHelper.sectionIndex === -1 || this.isFreeSectionIndex()) {
+            this.lastIconClass = this.myIconClass = 'icon icon-hidden';
         } else {
-            this.myIconClass = 'icon icon-visible';
+            this.lastIconClass = this.myIconClass = 'icon icon-visible';
             this.setPositionIcon();
         }
+    }
+
+    private isFreeSectionIndex(): boolean {
+        return this.viewer.sectionPlaneHelper.isFreeSectionIndex();
     }
 
     private setDataSource(data: BimPropertyModel[]) {
@@ -158,12 +182,14 @@ export class AppComponent implements AfterViewInit {
         this.dataSource = undefined;
         this.bimPropertyListService.clear();
 
-        if (this.bimServerViewer) {
-            const nodes = this.bimServerViewer.viewer.overlay.nodes;
+        if (this.viewer) {
+            this.viewer.removeSectionPlaneWidget();
+            this.viewer.disableSectionPlane();
+            const nodes = this.viewer.overlay.nodes;
             for (let index = 0; index < nodes.length; index++) {
                 nodes[index].destroy();
             }
-            this.bimServerViewer.viewer.eventHandler.off('selection_state_changed', (elements: any, isSelected: boolean) => {
+            this.viewer.eventHandler.off('selection_state_changed', (elements: any, isSelected: boolean) => {
                 this.onSelectionChanged(elements, isSelected);
             });
         }
@@ -249,10 +275,10 @@ export class AppComponent implements AfterViewInit {
                 });
 
                 this.bimServerViewer.loadModel(this.bimServerClient, project).then((data: any) => {
-                    const bimSurfer = this.bimServerViewer.viewer;
-                    this.sectionPlaneService.setViewer(bimSurfer);
+                    this.viewer = this.bimServerViewer.viewer;
+                    this.sectionPlaneService.setViewer(this.viewer);
 
-                    bimSurfer.eventHandler.on('selection_state_changed', (elements: any, isSelected: boolean) => {
+                    this.viewer.eventHandler.on('selection_state_changed', (elements: any, isSelected: boolean) => {
                         this.onSelectionChanged(elements, isSelected);
                     });
                 });
@@ -344,45 +370,114 @@ export class AppComponent implements AfterViewInit {
     }
 
     onCanvasMouseMove(e: MouseEvent) {
-        if (this.bimServerViewer && this.bimServerViewer.settings && this.bimServerViewer.settings.sectionPlaneDirection > 1) {
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.viewer.sectionPlaneHelper.sectionIndex > -1) {
+            this.viewer.cameraControl.getCanvasPosFromEvent(e, this.canvas_pos);
+            if (this.dragging) {
+                this.viewer.moveSectionPlane({
+                    canvasPos: this.canvas_pos
+                });
+            } else if (this.isFreeSectionIndex() && !this.freeSectionEnabled) {
+                this.viewer.positionSectionPlaneWidget({
+                    canvasPos: this.canvas_pos
+                });
+            }
+            this.setPositionIcon();
+        }
+    }
+
+    onCanvasMouseWheel(e: MouseEvent) {
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.viewer.sectionPlaneHelper.sectionIndex > -1) {
             this.setPositionIcon();
         }
     }
 
     private setPositionIcon() {
-        const center = vec3.create();
-        const overlay = this.bimServerViewer.viewer.overlay;
-        const index = this.bimServerViewer.settings.sectionPlaneDirection - 2;
-        center[index] = this.bimServerViewer.viewer.ps[0][index];
-        const [x, y] = overlay.transformPoint(center);
-        this.someInput.nativeElement.style.left = (x + parseFloat(overlay.svg.style.left)) + 'px';
-        this.someInput.nativeElement.style.top = (y + parseFloat(overlay.svg.style.top)) + 'px';
+        const overlay = this.viewer.overlay;
+        const points = this.viewer.ps;
+
+        if (points) {
+            const center = [
+                (points[2][0] + points[0][0]) / 2,
+                (points[2][1] + points[0][1]) / 2,
+                (points[2][2] + points[0][2]) / 2
+            ];
+            const [x, y] = overlay.transformPoint(center);
+            const canvasX = this.canvas.nativeElement.width;
+            const canvasY = this.canvas.nativeElement.height;
+            if (x > 0 && x < canvasX && y > 0 && y < canvasY) {
+                this.someInput.nativeElement.style.left = (x - 10) + 'px';
+                this.someInput.nativeElement.style.top = (y - 10) + 'px';
+                this.myIconClass = this.lastIconClass;
+            } else {
+                this.myIconClass = 'icon icon-hidden';
+            }
+        }
     }
 
     onCanvasMouseDown(e: MouseEvent) {
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.isFreeSectionIndex() && !this.freeSectionEnabled) {
+            this.viewer.cameraControl.isSelectionEnabled = false;
+        }
+    }
+
+    onCanvasMouseUp(e: MouseEvent) {
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.isFreeSectionIndex()) {
+            this.viewer.cameraControl.getCanvasPosFromEvent(e, this.canvas_pos);
+            const p = this.viewer.pick({ canvasPos: this.canvas_pos, select: false });
+            if (p.object && !this.viewer.camera.orbitting && this.viewer.cameraControl.dragMode !== DRAG_PAN) {
+                this.freeSectionEnabled = true;
+                this.lastIconClass = this.myIconClass = 'icon icon-visible';
+                this.setPositionIcon();
+            }
+        }
     }
 
     onIconMouseDown(e: MouseEvent) {
-        // console.log('icon: ' + e);
-        this.bimServerViewer.viewer.cameraControl.enableSectionPlane = true;
-        this.bimServerViewer.viewer.cameraControl.canvasMouseDown(e);
-        // this.bimServerViewer.viewer.cameraControl.mouseDown = true;
-        // this.bimServerViewer.viewer.cameraControl.dragMode = DRAG_SECTION;
+        this.canvas_pos[0] = (e.x - parseFloat(this.canvas.nativeElement.offsetParent.offsetLeft));
+        this.canvas_pos[1] = (e.y - parseFloat(this.canvas.nativeElement.offsetParent.offsetTop));
+
+        this.viewer.enableSectionPlane({
+            canvasPos: [this.canvas_pos[0], this.canvas_pos[1]]
+        });
+        this.dragging = true;
     }
 
     onIconMouseUp(e: MouseEvent) {
-        // console.log('icon: ' + e);
-        // this.bimServerViewer.viewer.cameraControl.enableSectionPlane = false;
-        // this.bimServerViewer.viewer.cameraControl.mouseDown = false;
-        // this.bimServerViewer.viewer.cameraControl.dragMode = DRAG_ORBIT;
-        // e.preventDefault();
     }
 
     onIconMouseMove(e: MouseEvent) {
-        if (this.bimServerViewer && this.bimServerViewer.settings && this.bimServerViewer.settings.sectionPlaneDirection > 1) {
-            // console.log('icon moving');
-            // console.log(e);
-            this.bimServerViewer.viewer.cameraControl.canvasMouseMove(e);
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.viewer.sectionPlaneHelper.sectionIndex > -1) {
+            const canvasX = (e.x - parseFloat(this.canvas.nativeElement.offsetParent.offsetLeft));
+            const canvasY = (e.y - parseFloat(this.canvas.nativeElement.offsetParent.offsetTop));
+            if (canvasX > 0 && canvasX < this.canvas.nativeElement.width && canvasY > 0 && canvasY < this.canvas.nativeElement.height) {
+                this.setPositionIcon();
+                if (this.dragging) {
+                    this.canvas_pos[0] = canvasX;
+                    this.canvas_pos[1] = canvasY;
+                    this.viewer.moveSectionPlane({
+                        canvasPos: this.canvas_pos
+                    });
+                }
+            }
+        }
+    }
+
+    onModelMouseUp(e: MouseEvent) {
+        if (this.freeSectionEnabled) {
+            this.viewer.cameraControl.isSelectionEnabled = true;
+        }
+        this.dragging = false;
+        this.viewer.sectionPlaneHelper.isSectionMoving = false;
+        if (this.viewer && this.viewer.sectionPlaneHelper &&
+            this.viewer.sectionPlaneHelper.sectionIndex > -1 && this.viewer.ps) {
+            this.viewer.sectionplanePoly.points = this.viewer.ps;
+        }
+    }
+
+    onResized(e: ResizedEvent) {
+        if (this.viewer && this.viewer.sectionPlaneHelper && this.viewer.sectionPlaneHelper.sectionIndex > -1) {
+            this.setPositionIcon();
+            this.viewer.camera.orbitYaw(0);
         }
     }
 }

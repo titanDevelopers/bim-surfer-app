@@ -1,3 +1,4 @@
+import { AngularResizedEventModule } from 'angular-resize-event';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -13,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { BimPropertyListService } from './bim-property-list.service';
 import { SectionPlaneService } from './section-plane.service';
 import { CommonModule } from '@angular/common';
+import { CdkTreeModule } from '@angular/cdk/tree';
 
 @NgModule({
     declarations: [
@@ -27,12 +29,15 @@ import { CommonModule } from '@angular/common';
         MatTreeModule,
         MatIconModule,
         MatButtonModule,
-        CommonModule
+        CommonModule,
+        CdkTreeModule,
+        AngularResizedEventModule
     ],
     exports: [
         MatIconModule,
         MatTreeModule,
-        MatTableModule
+        MatTableModule,
+        CdkTreeModule
     ],
     providers: [BimPropertyListService, BimMeasureUnitHelper, SectionPlaneService],
     bootstrap: [AppComponent]
