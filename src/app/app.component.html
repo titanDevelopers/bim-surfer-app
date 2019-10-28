@@ -50,7 +50,8 @@
                 <mat-form-field>
                     <mat-label>Section direction</mat-label>
                     <mat-select (selectionChange)="onDirectionChange($event)">
-                        <mat-option *ngFor="let direction of directions"
+                        <mat-option (click)="onDirectionClick($event)"
+                            *ngFor="let direction of directions"
                             [value]="direction.value">
                             {{direction.viewValue}}
                         </mat-option>
@@ -142,14 +143,13 @@
                 (mouseup)="onCanvasMouseUp($event)"
                 (mousedown)="onCanvasMouseDown($event)"
                 (wheel)="onCanvasMouseWheel($event)"></canvas>
-            <div [ngClass]="myIconClass"
+            <div [ngClass]="bimSectionPlaneService.myIconClass"
                 #cut
                 (mousedown)="onIconMouseDown($event)"
                 (mousemove)="onIconMouseMove($event)">
                 <img draggable="false"
                     (dragstart)="false"
                     class="image-cut">
-                <!-- <img src="../assets/cut-icon-hover.png"> -->
             </div>
         </div>
     </div>

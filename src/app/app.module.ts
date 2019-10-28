@@ -12,7 +12,7 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BimPropertyListService } from './bim-property-list.service';
-import { SectionPlaneService } from './section-plane.service';
+import { BimSectionPlaneService } from './bim-section-plane.service';
 import { CommonModule } from '@angular/common';
 import { CdkTreeModule } from '@angular/cdk/tree';
 
@@ -39,7 +39,7 @@ import { CdkTreeModule } from '@angular/cdk/tree';
         MatTableModule,
         CdkTreeModule
     ],
-    providers: [BimPropertyListService, BimMeasureUnitHelper, SectionPlaneService],
+    providers: [BimPropertyListService, BimMeasureUnitHelper, BimSectionPlaneService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
