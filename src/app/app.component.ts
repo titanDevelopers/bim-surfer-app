@@ -1,6 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
-import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
+import { BimServerViewer } from '@krosas/bimsurfer3/viewer/bimserverviewer';
+import { Viewer } from '@krosas/bimsurfer3/viewer/viewer';
 import { ProjectInfo } from './project-info.model';
 import { environment } from 'src/environments/environment';
 import { BimMeasureUnitHelper } from './bim-measure-unit.helper';
@@ -13,6 +14,8 @@ import { BimPropertyListService } from './bim-property-list.service';
 import { BimPropertyNodeModel, BimPropertyModel } from './bim-property.model';
 import { Subject, Observable, of as observableOf } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { BimSectionPlaneService } from './bim-section-plane.service';
+import { ResizedEvent } from 'angular-resize-event';
 
 export interface Direction {
     value: string;
@@ -32,7 +35,7 @@ export class AppComponent implements AfterViewInit {
     projectsInfo: ProjectInfo[] = [];
     bimServerClient: BimServerClient;
     bimServerViewer: BimServerViewer;
-    camera: any;
+    viewer: Viewer;
     progress = 0;
     isSectionDirection = true;
     roid: number;
@@ -45,25 +48,33 @@ export class AppComponent implements AfterViewInit {
     treeFlattener: MatTreeFlattener<BimPropertyModel, BimPropertyNodeModel>;
 
     private unsubscribe: Subject<void> = new Subject();
+    @ViewChild('cut', { static: false }) someInput: ElementRef;
+    @ViewChild('canvas', { static: false }) canvas: ElementRef;
+
 
     directions: Direction[] = [
-        { value: '0', viewValue: 'No section' },
-        { value: '1', viewValue: 'Free section' },
-        { value: '2', viewValue: 'X-axis' },
-        { value: '3', viewValue: 'Y-axis' },
-        { value: '4', viewValue: 'Z-axis' }
+        { value: '-1', viewValue: 'No section' },
+        { value: '0', viewValue: 'X-axis' },
+        { value: '1', viewValue: 'Y-axis' },
+        { value: '2', viewValue: 'Z-axis' },
+        { value: '3', viewValue: 'Free section' },
     ];
 
     translations = {};
+    cutIcon: any;
 
     constructor(
         private bimPropertyListService: BimPropertyListService,
-        private bimMeasureUnitHelper: BimMeasureUnitHelper) {
+        private bimMeasureUnitHelper: BimMeasureUnitHelper,
+        private bimSectionPlaneService: BimSectionPlaneService) {
 
         this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
             this.isExpandable, this.getChildren);
         this.treeControl = new FlatTreeControl<BimPropertyNodeModel>(this.getLevel, this.isExpandable);
         this.properties = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+
+        this.cutIcon = new Image();
+        this.cutIcon.src = '../assets/cut-icon.png';
     }
 
     transformer = (node: BimPropertyModel, level: number) => {
@@ -111,16 +122,12 @@ export class AppComponent implements AfterViewInit {
         this.loadModel(info.name);
     }
 
-    onDirectionChange(event: any) {
-        this.bimServerViewer.settings.sectionPlaneDirection = Number(event.value);
-        this.bimServerViewer.viewer.moveSectionPlaneWidget();
+    onDirectionChange(e: any) {
+        this.bimSectionPlaneService.onDirectionChange(e);
+    }
 
-        if (this.bimServerViewer.settings.sectionPlaneDirection === 0) {
-            this.bimServerViewer.viewer.removeSectionPlaneWidget();
-            this.bimServerViewer.viewer.disableSectionPlane();
-        } else if (this.bimServerViewer.settings.sectionPlaneDirection === 1) {
-            this.bimServerViewer.viewer.removeSectionPlaneWidget();
-        }
+    onDirectionClick(e: any) {
+        this.bimSectionPlaneService.onDirectionClick();
     }
 
     private setDataSource(data: BimPropertyModel[]) {
@@ -146,12 +153,14 @@ export class AppComponent implements AfterViewInit {
         this.dataSource = undefined;
         this.bimPropertyListService.clear();
 
-        if (this.bimServerViewer) {
-            const nodes = this.bimServerViewer.viewer.overlay.nodes;
+        if (this.viewer) {
+            this.viewer.removeSectionPlaneWidget();
+            this.viewer.disableSectionPlane();
+            const nodes = this.viewer.overlay.nodes;
             for (let index = 0; index < nodes.length; index++) {
                 nodes[index].destroy();
             }
-            this.bimServerViewer.viewer.eventHandler.off('selection_state_changed', (elements: any, isSelected: boolean) => {
+            this.viewer.eventHandler.off('selection_state_changed', (elements: any, isSelected: boolean) => {
                 this.onSelectionChanged(elements, isSelected);
             });
         }
@@ -217,19 +226,23 @@ export class AppComponent implements AfterViewInit {
             poid: poid
         }, (project: any) => {
             this.bimServerClient.getModel(project.oid, project.lastRevisionId, project.schema, false, (model: any) => {
-                const canvas = document.getElementById('glcanvas');
-
                 this.roid = project.lastRevisionId;
                 this.loadUnits(model);
                 this.bimPropertyListService.setModel(model);
                 this.bimServerViewer = new BimServerViewer(
                     {
                         triangleThresholdDefaultLayer: totalPrimitives,
-                        excludedTypes: this.getExludeTypes(project.schema)
+                        excludedTypes: this.getExludeTypes(project.schema),
+                        loaderSettings: {
+                            generateLineRenders: true
+                        },
+                        realtimeSettings: {
+                            drawLineRenders: false
+                        }
                     },
-                    canvas,
-                    canvas.clientWidth,
-                    canvas.clientHeight,
+                    this.canvas.nativeElement,
+                    this.canvas.nativeElement.clientWidth,
+                    this.canvas.nativeElement.clientHeight,
                     null);
 
                 this.bimServerViewer.setProgressListener((percentage: number) => {
@@ -237,9 +250,10 @@ export class AppComponent implements AfterViewInit {
                 });
 
                 this.bimServerViewer.loadModel(this.bimServerClient, project).then((data: any) => {
-                    const bimSurfer = this.bimServerViewer.viewer;
+                    this.viewer = this.bimServerViewer.viewer;
+                    this.bimSectionPlaneService.setViewer(this.viewer, this.canvas, this.someInput);
 
-                    bimSurfer.eventHandler.on('selection_state_changed', (elements: any, isSelected: boolean) => {
+                    this.viewer.eventHandler.on('selection_state_changed', (elements: any, isSelected: boolean) => {
                         this.onSelectionChanged(elements, isSelected);
                     });
                 });
@@ -328,5 +342,37 @@ export class AppComponent implements AfterViewInit {
                 }
             ]
         };
+    }
+
+    onCanvasMouseMove(e: MouseEvent) {
+        this.bimSectionPlaneService.onCanvasMove(e);
+    }
+
+    onCanvasMouseWheel(e: MouseEvent) {
+        this.bimSectionPlaneService.onCavasMouseWheel();
+    }
+
+    onCanvasMouseDown(e: MouseEvent) {
+        this.bimSectionPlaneService.onCanvasMouseDown();
+    }
+
+    onCanvasMouseUp(e: MouseEvent) {
+        this.bimSectionPlaneService.onCanvasMouseUp(e);
+    }
+
+    onIconMouseDown(e: MouseEvent) {
+        this.bimSectionPlaneService.onIconMouseDown(e);
+    }
+
+    onIconMouseMove(e: MouseEvent) {
+        this.bimSectionPlaneService.onIconMouseMove(e);
+    }
+
+    onModelMouseUp(e: MouseEvent) {
+        this.bimSectionPlaneService.onModelMouseUp();
+    }
+
+    onResized(e: ResizedEvent) {
+        this.bimSectionPlaneService.resizeSectionPlane();
     }
 }
