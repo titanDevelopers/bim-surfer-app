@@ -1,6 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { BimServerClient } from 'bimserverapi/BimServerClient';
-import { BimServerViewer } from '@slivka/surfer/viewer/bimserverviewer';
+import { BimServerViewer } from '@krosas/bimsurfer3/viewer/bimserverviewer';
 import { ProjectInfo } from './project-info.model';
 import { environment } from 'src/environments/environment';
 import { BimMeasureUnitHelper } from './bim-measure-unit.helper';
@@ -225,7 +225,10 @@ export class AppComponent implements AfterViewInit {
                 this.bimServerViewer = new BimServerViewer(
                     {
                         triangleThresholdDefaultLayer: totalPrimitives,
-                        excludedTypes: this.getExludeTypes(project.schema)
+                        excludedTypes: this.getExludeTypes(project.schema),
+                        loaderSettings: {
+                            generateLineRenders: true
+                        }
                     },
                     canvas,
                     canvas.clientWidth,
