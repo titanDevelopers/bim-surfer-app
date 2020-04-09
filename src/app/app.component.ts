@@ -150,6 +150,10 @@ export class AppComponent implements AfterViewInit {
     }
 
     private clear() {
+        if (this.roid){
+            this.bimServerViewer.unloadRevisionByRoid(this.roid);
+        }
+
         this.dataSource = undefined;
         this.bimPropertyListService.clear();
 
