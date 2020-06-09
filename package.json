@@ -29,7 +29,7 @@
         "@angular/router": "^8.1.1",
         "@krosas/bimsurfer3": "^0.272.7",
         "@material/icon-button": "^3.2.0",
-        "angular-resize-event": "^1.1.1",
+        "angular-resize-event": "^1.2.1",
         "bimserverapi": "0.0.167",
         "core-js": "^2.5.4",
         "rxjs": "~6.5.2",
