@@ -48,8 +48,8 @@ export class AppComponent implements AfterViewInit {
     treeFlattener: MatTreeFlattener<BimPropertyModel, BimPropertyNodeModel>;
 
     private unsubscribe: Subject<void> = new Subject();
-    @ViewChild('cut', { static: false }) someInput: ElementRef;
-    @ViewChild('canvas', { static: false }) canvas: ElementRef;
+    @ViewChild('cut') someInput: ElementRef;
+    @ViewChild('canvas') canvas: ElementRef;
 
 
     directions: Direction[] = [
@@ -150,7 +150,7 @@ export class AppComponent implements AfterViewInit {
     }
 
     private clear() {
-        if (this.roid){
+        if (this.roid) {
             this.bimServerViewer.unloadRevisionByRoid(this.roid);
         }
 
@@ -241,7 +241,8 @@ export class AppComponent implements AfterViewInit {
                             generateLineRenders: true
                         },
                         realtimeSettings: {
-                            drawLineRenders: false
+                            drawLineRenders: false,
+                            orderIndependentTransparency: false
                         }
                     },
                     this.canvas.nativeElement,
